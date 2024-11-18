@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit Money</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+            width: 150px;
+            height: auto;
+        }
+
+        .container h1 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-left: 5px;
+            color: #333;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="image/FalCoins740.png" alt="Logo" class="logo">
+        
+        <h1>Deposit Money</h1>
+
+        <div class="input-group">
+            <input type="number" id="depositAmount" placeholder="Enter Deposit Amount" />
+        </div>
+
+        <button onclick="processDeposit()">Deposit</button>
+
+        <div class="footer">
+            <p>Need Help? <a href="thirdpage.html">Go to Dashboard</a></p>
+        </div>
+    </div>
+
+    <script>
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) {
+            alert("You need to log in first.");
+            window.location.href = 'index.html';
+        }
+
+        const userData = JSON.parse(localStorage.getItem(currentUser));
+
+        function processDeposit() {
+            const depositAmount = parseFloat(document.getElementById('depositAmount').value);
+
+            if (isNaN(depositAmount) || depositAmount <= 0) {
+                alert('Please enter a valid deposit amount.');
+                return;
+            }
+
+            // Update the balance
+            userData.balance += depositAmount;
+
+            // Save updated data to localStorage
+            localStorage.setItem(currentUser, JSON.stringify(userData));
+
+            alert(`Successfully deposited ₱${depositAmount}!`);
+            window.location.href = 'thirdpage.html'; // Redirect to dashboard after deposit
+        }
+    </script>
+</body>
+</html>

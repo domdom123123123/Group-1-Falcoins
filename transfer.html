@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .container h1 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        .input-group span {
+            background-color: #f4f4f9;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 0 5px 5px 0;
+            font-size: 1rem;
+            margin-left: -1px;
+            color: #333;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Transfer</h1>
+
+        <div class="input-group">
+            <span>+63</span>
+            <input type="text" id="recipient" placeholder="Enter recipient's number" />
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="amount" placeholder="Amount to transfer" />
+        </div>
+
+        <button onclick="transfer()">Transfer</button>
+    </div>
+
+    <script>
+        function transfer() {
+            const currentUser = localStorage.getItem('currentUser');
+            const recipient = '+63' + document.getElementById('recipient').value; // Automatically add +63 to recipient
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            if (!recipient || !amount) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            const userData = JSON.parse(localStorage.getItem(currentUser));
+
+            if (userData.balance < amount) {
+                alert("Insufficient balance.");
+                return;
+            }
+
+            const recipientData = JSON.parse(localStorage.getItem(recipient));
+            if (!recipientData) {
+                alert("Recipient not found.");
+                return;
+            }
+
+            // Deduct from sender and add to recipient
+            userData.balance -= amount;
+            recipientData.balance += amount;
+
+            // Save updated data to localStorage
+            localStorage.setItem(currentUser, JSON.stringify(userData));
+            localStorage.setItem(recipient, JSON.stringify(recipientData));
+
+            alert("Transfer successful!");
+            window.location.href = 'thirdpage.html'; // Redirect to thirdpage
+        }
+    </script>
+</body>
+</html>
