@@ -1,5 +1,4 @@
 <html lang="en">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,61 +6,57 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f4f9;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
         }
-
         .container {
-            background-color: #ffffff;
-            padding: 30px;
+            text-align: center;
+            background: #ffffff;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 400px;
-            text-align: center;
         }
-
-        h1 {
+        .container h1 {
             margin-bottom: 20px;
             color: #333;
         }
-
         .input-group {
-            margin: 15px 0;
             display: flex;
             align-items: center;
+            margin: 15px 0;
+            width: 100%;
         }
-
         .input-group span {
-            background-color: #f0f0f0;
             padding: 10px;
-            border: 1px solid #ccc;
+            background-color: #ccc;
             border-radius: 5px 0 0 5px;
+            border: 1px solid #ccc;
         }
-
         .input-group input {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ccc;
             border-radius: 0 5px 5px 0;
+            font-size: 1rem;
         }
-
         button {
             width: 100%;
             padding: 12px;
-            margin: 10px 0;
+            margin: 15px 0;
             background-color: #007bff;
             border: none;
             border-radius: 5px;
             color: white;
             font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-
         button:hover {
             background-color: #0056b3;
         }
@@ -72,9 +67,9 @@
         <h1>Transfer Money</h1>
         <div class="input-group">
             <span>+63</span>
-            <input type="text" id="recipient" placeholder="Enter recipient's phone number" />
+            <input type="text" id="recipient" placeholder="Enter Recipient Number">
         </div>
-        <input type="number" id="amount" placeholder="Enter amount to transfer" />
+        <input type="number" id="transferAmount" placeholder="Enter Amount" min="1">
         <button onclick="processTransfer()">Transfer</button>
         <button onclick="goBack()">Back</button>
     </div>
@@ -83,17 +78,12 @@
         const currentUser = localStorage.getItem('currentUser');
         const userData = JSON.parse(localStorage.getItem(currentUser));
 
-        if (!currentUser || !userData) {
-            alert("You need to log in first.");
-            window.location.href = 'index.html';
-        }
-
         function processTransfer() {
             const recipientNumber = document.getElementById('recipient').value.trim();
-            const transferAmount = parseFloat(document.getElementById('amount').value);
+            const amount = parseFloat(document.getElementById('transferAmount').value);
 
-            if (!recipientNumber || isNaN(transferAmount) || transferAmount <= 0) {
-                alert("Please enter valid recipient number and amount.");
+            if (!recipientNumber || isNaN(amount) || amount <= 0) {
+                alert("Please enter valid details.");
                 return;
             }
 
@@ -102,29 +92,30 @@
                 return;
             }
 
-            if (transferAmount > userData.balance) {
+            if (amount > userData.balance) {
                 alert("Insufficient balance!");
                 return;
             }
 
             const recipientData = JSON.parse(localStorage.getItem(recipientNumber));
             if (!recipientData) {
-                alert("Recipient not found.");
+                alert("Recipient not found!");
                 return;
             }
 
-            // Update balances and transactions
-            userData.balance -= transferAmount;
-            recipientData.balance = (recipientData.balance || 0) + transferAmount;
+            // Update balances
+            userData.balance -= amount;
+            recipientData.balance = (recipientData.balance || 0) + amount;
 
-            userData.transactions.push(`Transferred ₱${transferAmount.toFixed(2)} to ${recipientNumber}`);
-            recipientData.transactions.push(`Received ₱${transferAmount.toFixed(2)} from ${currentUser}`);
+            // Log transactions
+            userData.transactions.push(`Transferred PHP ${amount.toFixed(2)} to +63${recipientNumber}`);
+            recipientData.transactions.push(`Received PHP ${amount.toFixed(2)} from +63${currentUser}`);
 
-            // Save data back to localStorage
+            // Save updated data
             localStorage.setItem(currentUser, JSON.stringify(userData));
             localStorage.setItem(recipientNumber, JSON.stringify(recipientData));
 
-            alert(`Successfully transferred ₱${transferAmount.toFixed(2)} to ${recipientNumber}`);
+            alert(`Transferred PHP ${amount.toFixed(2)} to +63${recipientNumber} successfully!`);
             window.location.href = 'thirdpage.html';
         }
 
