@@ -2,12 +2,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer</title>
+    <title>Transfer Money</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background-color: #f0f2f5;
+            background-color: #f4f4f9;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,56 +21,44 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             text-align: center;
         }
 
-        .container h1 {
+        h1 {
             margin-bottom: 20px;
             color: #333;
-            font-size: 2rem;
         }
 
         .input-group {
+            margin: 15px 0;
             display: flex;
             align-items: center;
-            margin: 15px 0;
-            width: 100%;
         }
 
         .input-group span {
-            background-color: #f4f4f9;
-            padding: 12px;
+            background-color: #f0f0f0;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px 0 0 5px;
-            font-size: 1rem;
-            color: #333;
         }
 
         .input-group input {
-            width: 100%;
-            padding: 12px;
+            flex: 1;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 0 5px 5px 0;
-            font-size: 1rem;
-            margin-left: -1px;
-            color: #333;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            margin: 20px 0;
+            margin: 10px 0;
             background-color: #007bff;
             border: none;
             border-radius: 5px;
             color: white;
             font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
 
         button:hover {
@@ -80,54 +68,67 @@
 </head>
 <body>
     <div class="container">
-        <h1>Transfer</h1>
-
+        <h1>Transfer Money</h1>
         <div class="input-group">
             <span>+63</span>
-            <input type="text" id="recipient" placeholder="Enter recipient's number" />
+            <input type="text" id="recipient" placeholder="Enter recipient's phone number" />
         </div>
-
-        <div class="input-group">
-            <input type="number" id="amount" placeholder="Amount to transfer" />
-        </div>
-
-        <button onclick="transfer()">Transfer</button>
+        <input type="number" id="amount" placeholder="Enter amount to transfer" />
+        <button onclick="processTransfer()">Transfer</button>
+        <button onclick="goBack()">Back</button>
     </div>
 
     <script>
-        function transfer() {
-            const currentUser = localStorage.getItem('currentUser');
-            const recipient = '+63' + document.getElementById('recipient').value; // Automatically add +63 to recipient
-            const amount = parseFloat(document.getElementById('amount').value);
+        const currentUser = localStorage.getItem('currentUser');
+        const userData = JSON.parse(localStorage.getItem(currentUser));
 
-            if (!recipient || !amount) {
-                alert("Please fill in all fields.");
+        if (!currentUser || !userData) {
+            alert("You need to log in first.");
+            window.location.href = 'index.html';
+        }
+
+        function processTransfer() {
+            const recipientNumber = document.getElementById('recipient').value.trim();
+            const transferAmount = parseFloat(document.getElementById('amount').value);
+
+            if (!recipientNumber || isNaN(transferAmount) || transferAmount <= 0) {
+                alert("Please enter valid recipient number and amount.");
                 return;
             }
 
-            const userData = JSON.parse(localStorage.getItem(currentUser));
-
-            if (userData.balance < amount) {
-                alert("Insufficient balance.");
+            if (recipientNumber === currentUser) {
+                alert("You cannot transfer money to your own number.");
                 return;
             }
 
-            const recipientData = JSON.parse(localStorage.getItem(recipient));
+            if (transferAmount > userData.balance) {
+                alert("Insufficient balance!");
+                return;
+            }
+
+            const recipientData = JSON.parse(localStorage.getItem(recipientNumber));
             if (!recipientData) {
                 alert("Recipient not found.");
                 return;
             }
 
-            // Deduct from sender and add to recipient
-            userData.balance -= amount;
-            recipientData.balance += amount;
+            // Update balances and transactions
+            userData.balance -= transferAmount;
+            recipientData.balance = (recipientData.balance || 0) + transferAmount;
 
-            // Save updated data to localStorage
+            userData.transactions.push(`Transferred ₱${transferAmount.toFixed(2)} to ${recipientNumber}`);
+            recipientData.transactions.push(`Received ₱${transferAmount.toFixed(2)} from ${currentUser}`);
+
+            // Save data back to localStorage
             localStorage.setItem(currentUser, JSON.stringify(userData));
-            localStorage.setItem(recipient, JSON.stringify(recipientData));
+            localStorage.setItem(recipientNumber, JSON.stringify(recipientData));
 
-            alert("Transfer successful!");
-            window.location.href = 'thirdpage.html'; // Redirect to thirdpage
+            alert(`Successfully transferred ₱${transferAmount.toFixed(2)} to ${recipientNumber}`);
+            window.location.href = 'thirdpage.html';
+        }
+
+        function goBack() {
+            window.location.href = 'thirdpage.html';
         }
     </script>
 </body>
