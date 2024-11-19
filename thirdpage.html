@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,42 +7,50 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background-color: #f0f2f5;
+            padding: 0;
+            background-color: #f4f4f9;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
         }
 
         .container {
             background-color: #ffffff;
-            padding: 20px;
+            padding: 30px;
             border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             text-align: center;
         }
 
-        .logo {
-            margin-bottom: 20px;
-            width: 150px;
-            height: auto;
-        }
-
         h1 {
+            margin-bottom: 20px;
             color: #333;
-            font-size: 2rem;
-            margin-bottom: 15px;
         }
 
-        .balance {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #28a745;
+        p {
+            font-size: 1.1rem;
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .transactions {
+            text-align: left;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+        }
+
+        .transactions p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+            color: #444;
         }
 
         button {
@@ -56,113 +63,62 @@
             color: white;
             font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
 
         button:hover {
             background-color: #0056b3;
         }
-
-        .history {
-            margin-top: 20px;
-            width: 100%;
-            text-align: left;
-        }
-
-        .history h2 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .history ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .history li {
-            background-color: #f8f9fa;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            color: #555;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #888;
-        }
-
-        .footer a {
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="image/FalCoins740.png" alt="Logo" class="logo">
-        
-        <h1>Welcome, <span id="usernameDisplay"></span>!</h1>
-        <p class="balance">Balance: ₱<span id="balanceDisplay">0.00</span></p>
-
-        <button onclick="deposit()">Deposit Money</button>
-        <button onclick="transfer()">Transfer Money</button>
-        <button onclick="logout()">Logout</button>
-
-        <div class="history">
-            <h2>Transaction History</h2>
-            <ul id="transactionHistory"></ul>
+        <h1>Welcome, <span id="user-name"></span>!</h1>
+        <p>Your current balance: ₱<span id="balance"></span></p>
+        <button onclick="goToTransfer()">Transfer Money</button>
+        <button onclick="goToDeposit()">Deposit Money</button>
+        <div class="transactions">
+            <h3>Transaction History</h3>
+            <div id="transaction-history">
+                <p>No transactions found.</p>
+            </div>
         </div>
     </div>
 
     <script>
+        // Load current user data
         const currentUser = localStorage.getItem('currentUser');
+        const userData = JSON.parse(localStorage.getItem(currentUser));
 
-        if (!currentUser) {
+        // Redirect if not logged in
+        if (!currentUser || !userData) {
             alert("You need to log in first.");
             window.location.href = 'index.html';
         }
 
-        const userData = JSON.parse(localStorage.getItem(currentUser));
-
-        // Display username and balance
-        document.getElementById('usernameDisplay').textContent = currentUser;
-        document.getElementById('balanceDisplay').textContent = userData.balance.toFixed(2);
+        // Display user info
+        document.getElementById('user-name').innerText = userData.name || "User";
+        document.getElementById('balance').innerText = userData.balance.toFixed(2);
 
         // Display transaction history
-        const transactionHistory = document.getElementById('transactionHistory');
+        const transactionHistory = document.getElementById('transaction-history');
+        transactionHistory.innerHTML = ''; // Clear default "No transactions" message
         if (userData.transactions && userData.transactions.length > 0) {
             userData.transactions.forEach(transaction => {
-                const li = document.createElement('li');
-                li.textContent = transaction;
-                transactionHistory.appendChild(li);
+                const p = document.createElement('p');
+                p.textContent = transaction;
+                transactionHistory.appendChild(p);
             });
         } else {
-            const noTransactions = document.createElement('li');
-            noTransactions.textContent = 'No transactions available.';
-            transactionHistory.appendChild(noTransactions);
+            transactionHistory.innerHTML = '<p>No transactions found.</p>';
         }
 
-        function deposit() {
-            window.location.href = 'deposit.html';
-        }
-
-        function transfer() {
+        // Navigation
+        function goToTransfer() {
             window.location.href = 'transfer.html';
         }
 
-        function logout() {
-            localStorage.removeItem('currentUser');
-            alert('You have been logged out.');
-            window.location.href = 'index.html';
+        function goToDeposit() {
+            window.location.href = 'deposit.html';
         }
     </script>
 </body>
