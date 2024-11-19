@@ -6,49 +6,55 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
         }
+
         .container {
-            text-align: center;
-            background: #ffffff;
-            padding: 20px;
+            background-color: #ffffff;
+            padding: 30px;
             border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
+
         .container h1 {
             margin-bottom: 20px;
             color: #333;
+            font-size: 2rem;
         }
+
         .input-group {
             display: flex;
             align-items: center;
             margin: 15px 0;
             width: 100%;
         }
-        .input-group span {
-            padding: 10px;
-            background-color: #ccc;
-            border-radius: 5px 0 0 5px;
-            border: 1px solid #ccc;
-        }
+
         .input-group input {
-            flex: 1;
+            width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
-            border-radius: 0 5px 5px 0;
+            border-radius: 5px;
             font-size: 1rem;
+            margin-left: 5px;
+            color: #333;
         }
+
         button {
             width: 100%;
             padding: 12px;
-            margin: 15px 0;
+            margin: 20px 0;
             background-color: #007bff;
             border: none;
             border-radius: 5px;
@@ -57,20 +63,53 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
+
         button:hover {
             background-color: #0056b3;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+            width: 150px;
+            height: auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <img src="image/FalCoins740.png" alt="Logo" class="logo">
+        
         <h1>Sign Up</h1>
+
         <div class="input-group">
             <span>+63</span>
-            <input type="text" id="phoneNumber" placeholder="Enter your number (without +63)" />
+            <input type="text" id="phoneNumber" placeholder="Enter your number" />
         </div>
-        <input type="password" id="password" placeholder="Enter your password" />
+
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Enter your password" />
+        </div>
+
         <button onclick="signUp()">Sign Up</button>
+
+        <div class="footer">
+            <p>Already have an account? <a href="login.html">Login</a></p>
+        </div>
     </div>
 
     <script>
@@ -83,6 +122,7 @@
                 return;
             }
 
+            // Add +63 to the phone number
             const fullPhoneNumber = `+63${phoneNumber}`;
 
             // Check if the user already exists
