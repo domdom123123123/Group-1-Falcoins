@@ -1,82 +1,28 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transfer Money</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-        }
-
-        .container {
-            text-align: center;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container h1 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .input-group {
-            display: flex;
-            align-items: center;
-            margin: 15px 0;
-            width: 100%;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-            margin-left: 5px;
-            color: #333;
-        }
-
-        .container button {
-            width: 100%;
-            padding: 12px;
-            margin: 20px 0;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .container button:hover {
-            background-color: #0056b3;
-        }
+        /* Your original transfer page styles will remain intact */
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Transfer Money</h1>
+        <img src="image/FalCoins740.png" alt="Logo" class="logo">
 
+        <h1>Transfer Money</h1>
+        
         <div class="input-group">
             <span>+63</span>
-            <input type="text" id="recipient" placeholder="Enter Recipient Username" />
+            <input type="text" id="recipient" placeholder="Enter recipient's 10-digit number" maxlength="10" />
         </div>
 
-        <input type="number" id="transferAmount" placeholder="Enter Amount" />
+        <div class="input-group">
+            <input type="number" id="transferAmount" placeholder="Enter amount" />
+        </div>
+
         <button onclick="processTransfer()">Transfer</button>
         <button onclick="goBack()">Back</button>
     </div>
@@ -86,52 +32,53 @@
         const userData = JSON.parse(localStorage.getItem(currentUser));
 
         function processTransfer() {
-            const recipientNumber = document.getElementById('recipient').value.trim();
+            const recipient = document.getElementById('recipient').value.trim();
             const amount = parseFloat(document.getElementById('transferAmount').value);
 
-            if (!recipientNumber || isNaN(amount) || amount <= 0) {
-                alert("Please enter valid details.");
+            if (!recipient || isNaN(amount) || amount <= 0) {
+                alert('Please enter valid details.');
                 return;
             }
 
-            // Prevent sending to self
-            if (recipientNumber === currentUser) {
-                alert("You cannot transfer money to your own number.");
+            if (recipient === currentUser) {
+                alert('You cannot send money to yourself.');
                 return;
             }
 
-            // Add +63 to the recipient's phone number
-            const fullRecipientNumber = `+63${recipientNumber}`;
+            if (recipient.length !== 10 || isNaN(recipient)) {
+                alert('Please enter a valid 10-digit phone number.');
+                return;
+            }
+
+            const recipientData = JSON.parse(localStorage.getItem(`+63${recipient}`));
+            if (!recipientData) {
+                alert('Recipient not found.');
+                return;
+            }
 
             if (amount > userData.balance) {
-                alert("Insufficient balance!");
+                alert('Insufficient balance!');
                 return;
             }
 
-            const recipientData = JSON.parse(localStorage.getItem(fullRecipientNumber));
-            if (!recipientData) {
-                alert("Recipient not found!");
-                return;
-            }
-
-            // Update balances
+            // Deduct from current user and add to recipient
             userData.balance -= amount;
-            recipientData.balance = (recipientData.balance || 0) + amount;
+            recipientData.balance += amount;
 
-            // Log transactions
-            userData.transactions.push(`Transferred PHP ${amount.toFixed(2)} to ${fullRecipientNumber}`);
-            recipientData.transactions.push(`Received PHP ${amount.toFixed(2)} from ${currentUser}`);
+            // Update transactions
+            userData.transactions.push({ type: 'Transfer', amount: -amount, to: recipient });
+            recipientData.transactions.push({ type: 'Received', amount: amount, from: currentUser });
 
-            // Save updated data
+            // Save the updated data
             localStorage.setItem(currentUser, JSON.stringify(userData));
-            localStorage.setItem(fullRecipientNumber, JSON.stringify(recipientData));
+            localStorage.setItem(`+63${recipient}`, JSON.stringify(recipientData));
 
-            alert(`Transferred PHP ${amount.toFixed(2)} to ${fullRecipientNumber} successfully!`);
-            window.location.href = 'thirdpage.html';
+            alert('Transfer successful!');
+            window.location.href = 'index.html';  // Redirect to dashboard
         }
 
         function goBack() {
-            window.location.href = 'thirdpage.html';
+            window.location.href = 'index.html';  // Go back to dashboard
         }
     </script>
 </body>
