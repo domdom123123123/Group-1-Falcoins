@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -41,22 +42,13 @@
             width: 100%;
         }
 
-        .input-group span {
-            background-color: #f4f4f9;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px 0 0 5px;
-            font-size: 1rem;
-            color: #333;
-        }
-
         .input-group input {
             width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
-            border-radius: 0 5px 5px 0;
+            border-radius: 5px;
             font-size: 1rem;
-            margin-left: -1px;
+            margin-left: 5px;
             color: #333;
         }
 
@@ -106,8 +98,7 @@
         <h1>Login</h1>
 
         <div class="input-group">
-            <span>+63</span>
-            <input type="text" id="username" placeholder="Enter your number" />
+            <input type="text" id="username" placeholder="Enter your number (e.g., +63XXXXXXXXXX)" />
         </div>
 
         <div class="input-group">
@@ -123,11 +114,18 @@
 
     <script>
         function login() {
-            const username = '+63' + document.getElementById('username').value; // Automatically add +63
+            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            if (!username || !password) {
-                alert("Please fill in both fields.");
+            // Validate the phone number format
+            const phonePattern = /^\+63\d{10}$/;
+            if (!phonePattern.test(username)) {
+                alert("Please enter a valid phone number starting with +63 followed by 10 digits.");
+                return;
+            }
+
+            if (!password) {
+                alert("Please enter your password.");
                 return;
             }
 
@@ -140,7 +138,7 @@
 
             // Store the current user in localStorage
             localStorage.setItem('currentUser', username);
-            window.location.href = 'thirdpage.html'; // Redirect to thirdpage on successful login
+            window.location.href = 'dashboard.html'; // Redirect to dashboard after successful login
         }
     </script>
 </body>
