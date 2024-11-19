@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -95,15 +94,14 @@
     <div class="container">
         <img src="image/FalCoins740.png" alt="Logo" class="logo">
         
-        <h1>Sign Up</h1>
+        <h1>Create an Account</h1>
 
         <div class="input-group">
-            <span>+63</span>
-            <input type="text" id="phoneNumber" placeholder="Enter your 10-digit number" maxlength="10" />
+            <input type="text" id="username" placeholder="Enter your number (e.g., +63XXXXXXXXXX)" />
         </div>
 
         <div class="input-group">
-            <input type="password" id="password" placeholder="Enter your password" />
+            <input type="password" id="password" placeholder="Create a password" />
         </div>
 
         <button onclick="signUp()">Sign Up</button>
@@ -115,40 +113,32 @@
 
     <script>
         function signUp() {
-            const phoneNumber = document.getElementById('phoneNumber').value.trim();
-            const password = document.getElementById('password').value.trim();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
-            // Validate phone number (10 digits after +63)
-            if (!phoneNumber || !password) {
-                alert("Please fill in both fields.");
+            // Validate the phone number format
+            const phonePattern = /^\+63\d{10}$/;
+            if (!phonePattern.test(username)) {
+                alert("Please enter a valid phone number starting with +63 followed by 10 digits.");
                 return;
             }
 
-            if (phoneNumber.length !== 10 || isNaN(phoneNumber)) {
-                alert("Please enter a valid 10-digit phone number.");
+            if (!password) {
+                alert("Please enter a password.");
                 return;
             }
 
-            const fullPhoneNumber = `+63${phoneNumber}`;
-
-            if (localStorage.getItem(fullPhoneNumber)) {
-                alert("User already exists.");
-                return;
-            }
-
+            // Save the user data to localStorage
             const userData = {
-                phoneNumber: fullPhoneNumber,
-                password: password,
+                username,
+                password,
                 balance: 0,
                 transactions: []
             };
 
-            // Save to localStorage
-            localStorage.setItem(fullPhoneNumber, JSON.stringify(userData));
-            alert("User registered successfully!");
-
-            // Redirect to dashboard (index)
-            window.location.href = 'index.html';
+            localStorage.setItem(username, JSON.stringify(userData));
+            alert("Account created successfully!");
+            window.location.href = 'login.html'; // Redirect to login page after sign-up
         }
     </script>
 </body>
