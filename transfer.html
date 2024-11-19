@@ -1,84 +1,166 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transfer Money</title>
     <style>
-        /* Your original transfer page styles will remain intact */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .container h1 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-left: 5px;
+            color: #333;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+            width: 150px;
+            height: auto;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <img src="image/FalCoins740.png" alt="Logo" class="logo">
-
-        <h1>Transfer Money</h1>
         
+        <h1>Transfer Money</h1>
+
         <div class="input-group">
-            <span>+63</span>
-            <input type="text" id="recipient" placeholder="Enter recipient's 10-digit number" maxlength="10" />
+            <input type="text" id="receiver" placeholder="Enter receiver's number (e.g., +63XXXXXXXXXX)" />
         </div>
 
         <div class="input-group">
-            <input type="number" id="transferAmount" placeholder="Enter amount" />
+            <input type="number" id="amount" placeholder="Amount to transfer" />
         </div>
 
-        <button onclick="processTransfer()">Transfer</button>
-        <button onclick="goBack()">Back</button>
+        <button onclick="transfer()">Transfer</button>
+
+        <div class="footer">
+            <p><a href="dashboard.html">Go back to Dashboard</a></p>
+        </div>
     </div>
 
     <script>
-        const currentUser = localStorage.getItem('currentUser');
-        const userData = JSON.parse(localStorage.getItem(currentUser));
+        function transfer() {
+            const receiver = document.getElementById('receiver').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const currentUser = localStorage.getItem('currentUser');
+            const userData = JSON.parse(localStorage.getItem(currentUser));
 
-        function processTransfer() {
-            const recipient = document.getElementById('recipient').value.trim();
-            const amount = parseFloat(document.getElementById('transferAmount').value);
-
-            if (!recipient || isNaN(amount) || amount <= 0) {
-                alert('Please enter valid details.');
+            // Validate phone number format
+            const phonePattern = /^\+63\d{10}$/;
+            if (!phonePattern.test(receiver)) {
+                alert("Please enter a valid phone number starting with +63 followed by 10 digits.");
                 return;
             }
 
-            if (recipient === currentUser) {
-                alert('You cannot send money to yourself.');
+            if (receiver === currentUser) {
+                alert("You cannot transfer money to your own account.");
                 return;
             }
 
-            if (recipient.length !== 10 || isNaN(recipient)) {
-                alert('Please enter a valid 10-digit phone number.');
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid amount.");
                 return;
             }
 
-            const recipientData = JSON.parse(localStorage.getItem(`+63${recipient}`));
-            if (!recipientData) {
-                alert('Recipient not found.');
+            if (userData.balance < amount) {
+                alert("Insufficient balance.");
                 return;
             }
 
-            if (amount > userData.balance) {
-                alert('Insufficient balance!');
-                return;
-            }
-
-            // Deduct from current user and add to recipient
+            // Deduct from current user
             userData.balance -= amount;
-            recipientData.balance += amount;
-
-            // Update transactions
-            userData.transactions.push({ type: 'Transfer', amount: -amount, to: recipient });
-            recipientData.transactions.push({ type: 'Received', amount: amount, from: currentUser });
-
-            // Save the updated data
             localStorage.setItem(currentUser, JSON.stringify(userData));
-            localStorage.setItem(`+63${recipient}`, JSON.stringify(recipientData));
 
-            alert('Transfer successful!');
-            window.location.href = 'index.html';  // Redirect to dashboard
-        }
+            // Find receiver and update balance
+            const receiverData = JSON.parse(localStorage.getItem(receiver));
+            if (receiverData) {
+                receiverData.balance += amount;
+                receiverData.transactions.push({
+                    sender: currentUser,
+                    amount,
+                    date: new Date().toLocaleString()
+                });
+                localStorage.setItem(receiver, JSON.stringify(receiverData));
+            } else {
+                alert("Receiver not found.");
+                return;
+            }
 
-        function goBack() {
-            window.location.href = 'index.html';  // Go back to dashboard
+            alert("Transfer successful!");
+            window.location.href = 'dashboard.html'; // Redirect to dashboard
         }
     </script>
 </body>
