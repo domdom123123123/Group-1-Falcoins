@@ -115,10 +115,18 @@
     <script>
         function signUp() {
             const phoneNumber = document.getElementById('phoneNumber').value.trim();
-            const password = document.getElementById('password').value;
+            const password = document.getElementById('password').value.trim();
 
+            // Validation checks
             if (!phoneNumber || !password) {
                 alert("Please fill in both fields.");
+                return;
+            }
+
+            // Remove any non-numeric characters, ensure phone number is numeric and 9 digits long
+            const phoneRegex = /^[0-9]{9}$/;
+            if (!phoneRegex.test(phoneNumber)) {
+                alert("Please enter a valid phone number (9 digits).");
                 return;
             }
 
@@ -131,17 +139,23 @@
                 return;
             }
 
-            // Save user data in localStorage
+            // Create user object to store in localStorage
             const userData = {
                 phoneNumber: fullPhoneNumber,
                 password: password,
                 balance: 0,
                 transactions: []
             };
-            localStorage.setItem(fullPhoneNumber, JSON.stringify(userData));
 
-            alert("User registered successfully!");
-            window.location.href = 'login.html';  // Redirect to login page
+            // Save the new user data to localStorage
+            try {
+                localStorage.setItem(fullPhoneNumber, JSON.stringify(userData));
+                alert("User registered successfully!");
+                window.location.href = 'login.html';  // Redirect to login page
+            } catch (error) {
+                console.error("Error saving to localStorage", error);
+                alert("An error occurred while saving your data. Please try again.");
+            }
         }
     </script>
 </body>
