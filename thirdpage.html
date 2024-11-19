@@ -7,8 +7,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
+            background-color: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,7 +20,7 @@
             border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             width: 90%;
-            max-width: 500px;
+            max-width: 600px;
             text-align: center;
         }
 
@@ -30,33 +29,26 @@
             color: #333;
         }
 
-        p {
-            font-size: 1.1rem;
-            margin: 10px 0;
-            color: #555;
-        }
-
         .transactions {
-            text-align: left;
             margin-top: 20px;
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            max-height: 200px;
+            text-align: left;
+            max-height: 300px;
             overflow-y: auto;
             border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
         }
 
         .transactions p {
-            margin: 5px 0;
-            font-size: 0.95rem;
-            color: #444;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #555;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            margin: 10px 0;
+            margin: 20px 0;
             background-color: #007bff;
             border: none;
             border-radius: 5px;
@@ -72,53 +64,42 @@
 </head>
 <body>
     <div class="container">
-        <h1>Welcome, <span id="user-name"></span>!</h1>
-        <p>Your current balance: ₱<span id="balance"></span></p>
-        <button onclick="goToTransfer()">Transfer Money</button>
-        <button onclick="goToDeposit()">Deposit Money</button>
-        <div class="transactions">
-            <h3>Transaction History</h3>
-            <div id="transaction-history">
-                <p>No transactions found.</p>
-            </div>
+        <h1>Welcome to Your Dashboard</h1>
+        <p>Your current balance: ₱<span id="balance">0.00</span></p>
+
+        <h2>Transaction History</h2>
+        <div class="transactions" id="transactionHistory">
+            <!-- Transactions will load here -->
         </div>
+
+        <button onclick="logout()">Logout</button>
     </div>
 
     <script>
-        // Load current user data
         const currentUser = localStorage.getItem('currentUser');
         const userData = JSON.parse(localStorage.getItem(currentUser));
 
-        // Redirect if not logged in
         if (!currentUser || !userData) {
             alert("You need to log in first.");
             window.location.href = 'index.html';
         }
 
-        // Display user info
-        document.getElementById('user-name').innerText = userData.name || "User";
-        document.getElementById('balance').innerText = userData.balance.toFixed(2);
+        // Display balance
+        document.getElementById('balance').textContent = userData.balance.toFixed(2);
 
         // Display transaction history
-        const transactionHistory = document.getElementById('transaction-history');
-        transactionHistory.innerHTML = ''; // Clear default "No transactions" message
+        const transactionHistory = document.getElementById('transactionHistory');
         if (userData.transactions && userData.transactions.length > 0) {
-            userData.transactions.forEach(transaction => {
-                const p = document.createElement('p');
-                p.textContent = transaction;
-                transactionHistory.appendChild(p);
-            });
+            transactionHistory.innerHTML = userData.transactions
+                .map(transaction => `<p>${transaction}</p>`)
+                .join('');
         } else {
             transactionHistory.innerHTML = '<p>No transactions found.</p>';
         }
 
-        // Navigation
-        function goToTransfer() {
-            window.location.href = 'transfer.html';
-        }
-
-        function goToDeposit() {
-            window.location.href = 'deposit.html';
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
         }
     </script>
 </body>
