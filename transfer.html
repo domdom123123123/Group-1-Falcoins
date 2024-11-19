@@ -92,12 +92,13 @@
                 return;
             }
 
+            const fullRecipientNumber = `+63${recipientNumber}`;
             if (amount > userData.balance) {
                 alert("Insufficient balance!");
                 return;
             }
 
-            const recipientData = JSON.parse(localStorage.getItem(recipientNumber));
+            const recipientData = JSON.parse(localStorage.getItem(fullRecipientNumber));
             if (!recipientData) {
                 alert("Recipient not found!");
                 return;
@@ -108,14 +109,14 @@
             recipientData.balance = (recipientData.balance || 0) + amount;
 
             // Log transactions
-            userData.transactions.push(`Transferred PHP ${amount.toFixed(2)} to +63${recipientNumber}`);
-            recipientData.transactions.push(`Received PHP ${amount.toFixed(2)} from +63${currentUser}`);
+            userData.transactions.push(`Transferred PHP ${amount.toFixed(2)} to ${fullRecipientNumber}`);
+            recipientData.transactions.push(`Received PHP ${amount.toFixed(2)} from ${currentUser}`);
 
             // Save updated data
             localStorage.setItem(currentUser, JSON.stringify(userData));
-            localStorage.setItem(recipientNumber, JSON.stringify(recipientData));
+            localStorage.setItem(fullRecipientNumber, JSON.stringify(recipientData));
 
-            alert(`Transferred PHP ${amount.toFixed(2)} to +63${recipientNumber} successfully!`);
+            alert(`Transferred PHP ${amount.toFixed(2)} to ${fullRecipientNumber} successfully!`);
             window.location.href = 'thirdpage.html';
         }
 
