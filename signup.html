@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -98,7 +99,7 @@
 
         <div class="input-group">
             <span>+63</span>
-            <input type="text" id="phoneNumber" placeholder="Enter your number" />
+            <input type="text" id="phoneNumber" placeholder="Enter your 10-digit number" maxlength="10" />
         </div>
 
         <div class="input-group">
@@ -117,29 +118,24 @@
             const phoneNumber = document.getElementById('phoneNumber').value.trim();
             const password = document.getElementById('password').value.trim();
 
-            // Validation checks
+            // Validate phone number (10 digits after +63)
             if (!phoneNumber || !password) {
                 alert("Please fill in both fields.");
                 return;
             }
 
-            // Remove any non-numeric characters, ensure phone number is numeric and 9 digits long
-            const phoneRegex = /^[0-9]{9}$/;
-            if (!phoneRegex.test(phoneNumber)) {
-                alert("Please enter a valid phone number (9 digits).");
+            if (phoneNumber.length !== 10 || isNaN(phoneNumber)) {
+                alert("Please enter a valid 10-digit phone number.");
                 return;
             }
 
-            // Add +63 to the phone number
             const fullPhoneNumber = `+63${phoneNumber}`;
 
-            // Check if the user already exists
             if (localStorage.getItem(fullPhoneNumber)) {
                 alert("User already exists.");
                 return;
             }
 
-            // Create user object to store in localStorage
             const userData = {
                 phoneNumber: fullPhoneNumber,
                 password: password,
@@ -147,15 +143,12 @@
                 transactions: []
             };
 
-            // Save the new user data to localStorage
-            try {
-                localStorage.setItem(fullPhoneNumber, JSON.stringify(userData));
-                alert("User registered successfully!");
-                window.location.href = 'index.html';  // Redirect to login page
-            } catch (error) {
-                console.error("Error saving to localStorage", error);
-                alert("An error occurred while saving your data. Please try again.");
-            }
+            // Save to localStorage
+            localStorage.setItem(fullPhoneNumber, JSON.stringify(userData));
+            alert("User registered successfully!");
+
+            // Redirect to dashboard (index)
+            window.location.href = 'index.html';
         }
     </script>
 </body>
