@@ -11,71 +11,44 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f2f5;
+            background-color: #f4f4f9;
         }
-
         .container {
             text-align: center;
-            background-color: #ffffff;
-            padding: 30px;
+            background: #ffffff;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
-
         .container h1 {
             margin-bottom: 20px;
             color: #333;
-            font-size: 2rem;
         }
-
         .input-group {
             display: flex;
             align-items: center;
             margin: 15px 0;
             width: 100%;
         }
-
         .input-group span {
-            padding: 12px;
-            background-color: #f4f4f9;
-            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #ccc;
             border-radius: 5px 0 0 5px;
-            font-size: 1rem;
-            color: #333;
-            flex-shrink: 0;
+            border: 1px solid #ccc;
         }
-
         .input-group input {
-            width: 100%;
+            flex: 1;
             padding: 12px;
             border: 1px solid #ccc;
             border-radius: 0 5px 5px 0;
             font-size: 1rem;
-            margin-left: -1px;
-            color: #333;
-            box-sizing: border-box; /* Ensures proper sizing */
         }
-
-        input[type="password"], input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-            color: #333;
-        }
-
         button {
             width: 100%;
             padding: 12px;
-            margin: 20px 0;
+            margin: 15px 0;
             background-color: #007bff;
             border: none;
             border-radius: 5px;
@@ -84,81 +57,51 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
         button:hover {
             background-color: #0056b3;
-        }
-
-        .footer {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #888;
-        }
-
-        .footer a {
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        .logo {
-            margin-bottom: 20px;
-            width: 150px;
-            height: auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="image/FalCoins740.png" alt="Logo" class="logo">
-
         <h1>Sign Up</h1>
         <div class="input-group">
             <span>+63</span>
-            <input type="text" id="phoneNumber" placeholder="Enter your phone number" />
+            <input type="text" id="phoneNumber" placeholder="Enter your number (without +63)" />
         </div>
-        <input type="text" id="name" placeholder="Enter your name" />
         <input type="password" id="password" placeholder="Enter your password" />
-        <button onclick="signup()">Sign Up</button>
-
-        <div class="footer">
-            <p>Already have an account? <a href="index.html">Login</a></p>
-        </div>
+        <button onclick="signUp()">Sign Up</button>
     </div>
 
     <script>
-        function signup() {
-            const phoneNumberInput = document.getElementById('phoneNumber').value;
-            const name = document.getElementById('name').value.trim();
+        function signUp() {
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
             const password = document.getElementById('password').value;
 
-            // Add +63 prefix automatically
-            const phoneNumber = `+63${phoneNumberInput}`;
-
-            // Validate input
-            if (!phoneNumberInput || !name || !password) {
-                alert("Please fill in all fields.");
+            if (!phoneNumber || !password) {
+                alert("Please fill in both fields.");
                 return;
             }
 
-            if (localStorage.getItem(phoneNumber)) {
-                alert("This phone number is already registered.");
+            const fullPhoneNumber = `+63${phoneNumber}`;
+
+            // Check if the user already exists
+            if (localStorage.getItem(fullPhoneNumber)) {
+                alert("User already exists.");
                 return;
             }
 
+            // Save user data in localStorage
             const userData = {
-                name,
-                password,
-                balance: 0, // Initial balance
-                transactions: [] // Initialize as an empty array
+                phoneNumber: fullPhoneNumber,
+                password: password,
+                balance: 0,
+                transactions: []
             };
+            localStorage.setItem(fullPhoneNumber, JSON.stringify(userData));
 
-            localStorage.setItem(phoneNumber, JSON.stringify(userData));
-            alert("Account created successfully!");
-            window.location.href = 'index.html'; // Redirect to login page
+            alert("User registered successfully!");
+            window.location.href = 'login.html';  // Redirect to login page
         }
     </script>
 </body>
