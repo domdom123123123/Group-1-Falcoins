@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard</title>
+    <title>Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,19 +12,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         .container {
             background-color: #ffffff;
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             width: 90%;
-            max-width: 600px;
+            max-width: 500px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             text-align: center;
         }
@@ -35,15 +34,15 @@
             height: auto;
         }
 
-        .container h1 {
-            margin-bottom: 20px;
+        h1 {
             color: #333;
             font-size: 2rem;
+            margin-bottom: 15px;
         }
 
         .balance {
             font-size: 1.5rem;
-            margin: 20px 0;
+            margin-bottom: 20px;
             color: #28a745;
         }
 
@@ -64,6 +63,33 @@
             background-color: #0056b3;
         }
 
+        .history {
+            margin-top: 20px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .history h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .history ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .history li {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: #555;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
         .footer {
             margin-top: 20px;
             font-size: 0.9rem;
@@ -78,43 +104,65 @@
         .footer a:hover {
             text-decoration: underline;
         }
-
     </style>
 </head>
 <body>
     <div class="container">
         <img src="image/FalCoins740.png" alt="Logo" class="logo">
         
-        <h1>Welcome to Your Dashboard</h1>
+        <h1>Welcome, <span id="usernameDisplay"></span>!</h1>
+        <p class="balance">Balance: ₱<span id="balanceDisplay">0.00</span></p>
 
-        <div class="balance">
-            <p>Your Balance: ₱<span id="balance"></span></p>
-        </div>
+        <button onclick="deposit()">Deposit Money</button>
+        <button onclick="transfer()">Transfer Money</button>
+        <button onclick="logout()">Logout</button>
 
-        <button onclick="goToDeposit()">Deposit</button>
-        <button onclick="goToTransfer()">Transfer</button>
-
-        <div class="footer">
-            <p>Not you? <a href="index.html">Log out</a></p>
+        <div class="history">
+            <h2>Transaction History</h2>
+            <ul id="transactionHistory"></ul>
         </div>
     </div>
 
     <script>
         const currentUser = localStorage.getItem('currentUser');
+
         if (!currentUser) {
             alert("You need to log in first.");
             window.location.href = 'index.html';
         }
 
         const userData = JSON.parse(localStorage.getItem(currentUser));
-        document.getElementById('balance').innerText = userData.balance;
 
-        function goToDeposit() {
-            window.location.href = 'deposit.html'; // Redirect to deposit page
+        // Display username and balance
+        document.getElementById('usernameDisplay').textContent = currentUser;
+        document.getElementById('balanceDisplay').textContent = userData.balance.toFixed(2);
+
+        // Display transaction history
+        const transactionHistory = document.getElementById('transactionHistory');
+        if (userData.transactions && userData.transactions.length > 0) {
+            userData.transactions.forEach(transaction => {
+                const li = document.createElement('li');
+                li.textContent = transaction;
+                transactionHistory.appendChild(li);
+            });
+        } else {
+            const noTransactions = document.createElement('li');
+            noTransactions.textContent = 'No transactions available.';
+            transactionHistory.appendChild(noTransactions);
         }
 
-        function goToTransfer() {
-            window.location.href = 'transfer.html'; // Redirect to transfer page
+        function deposit() {
+            window.location.href = 'deposit.html';
+        }
+
+        function transfer() {
+            window.location.href = 'transfer.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            alert('You have been logged out.');
+            window.location.href = 'index.html';
         }
     </script>
 </body>
