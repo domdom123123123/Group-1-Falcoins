@@ -17,17 +17,28 @@
         .container {
             text-align: center;
             background-color: #ffffff;
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 500px;
         }
 
-        .container h1 {
+        .container img {
+            width: 150px;
+            height: auto;
             margin-bottom: 20px;
+        }
+
+        .container h1 {
             color: #333;
-            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .balance {
+            font-size: 1.5rem;
+            color: #007bff;
+            margin-bottom: 20px;
         }
 
         .button-group {
@@ -76,7 +87,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>Dashboard</h1>
+        <img src="image/FalCoins740.png" alt="Logo">
+
+        <h1>Welcome, <span id="userName"></span>!</h1>
+        <div class="balance">
+            Current Balance: <span id="userBalance">0</span> PHP
+        </div>
 
         <div class="button-group">
             <button onclick="deposit()">Deposit</button>
@@ -86,14 +102,41 @@
         <div class="transactions">
             <h3>Transaction History</h3>
             <div id="transactionList">
-                <!-- Transactions will be displayed here -->
+                <!-- Transactions will appear here -->
             </div>
         </div>
+
+        <button onclick="logout()">Log Out</button>
     </div>
 
     <script>
         const currentUser = localStorage.getItem('currentUser');
         const userData = JSON.parse(localStorage.getItem(currentUser));
+
+        function loadDashboard() {
+            if (!userData) {
+                alert("No user logged in!");
+                window.location.href = "index.html"; // Redirect to login
+                return;
+            }
+
+            document.getElementById("userName").innerText = userData.name || currentUser;
+            document.getElementById("userBalance").innerText = userData.balance.toFixed(2);
+
+            const transactionList = document.getElementById("transactionList");
+
+            if (!userData.transactions || userData.transactions.length === 0) {
+                transactionList.innerHTML = "<p>No transactions found.</p>";
+                return;
+            }
+
+            userData.transactions.forEach(transaction => {
+                const transactionDiv = document.createElement("div");
+                transactionDiv.classList.add("transaction");
+                transactionDiv.innerText = transaction;
+                transactionList.appendChild(transactionDiv);
+            });
+        }
 
         function deposit() {
             window.location.href = 'deposit.html';
@@ -103,24 +146,14 @@
             window.location.href = 'transfer.html';
         }
 
-        function loadTransactions() {
-            const transactionList = document.getElementById('transactionList');
-
-            if (!userData || !userData.transactions || userData.transactions.length === 0) {
-                transactionList.innerHTML = "<p>No transactions found.</p>";
-                return;
-            }
-
-            userData.transactions.forEach(transaction => {
-                const transactionDiv = document.createElement('div');
-                transactionDiv.classList.add('transaction');
-                transactionDiv.innerText = transaction;
-                transactionList.appendChild(transactionDiv);
-            });
+        function logout() {
+            localStorage.removeItem('currentUser'); // Remove current user
+            alert("Logged out successfully!");
+            window.location.href = 'index.html'; // Redirect to login
         }
 
-        // Load transactions on page load
-        loadTransactions();
+        // Load user data on page load
+        loadDashboard();
     </script>
 </body>
 </html>
